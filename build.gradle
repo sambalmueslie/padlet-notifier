@@ -81,3 +81,8 @@ tasks {
         }
     }
 }
+
+
+// some heroku specific stuff
+task stage(dependsOn: ['build', 'clean'])
+build.mustRunAfter clean
