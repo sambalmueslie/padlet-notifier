@@ -2,9 +2,6 @@ package de.sambalmueslie.padlet.config
 
 
 import io.micronaut.context.annotation.ConfigurationProperties
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import javax.validation.constraints.NotBlank
 
 @ConfigurationProperties("teams")
 class TeamsConfiguration {

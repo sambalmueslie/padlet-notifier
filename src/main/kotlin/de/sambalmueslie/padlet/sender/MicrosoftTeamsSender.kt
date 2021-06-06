@@ -1,8 +1,11 @@
 package de.sambalmueslie.padlet.sender
 
 
-import com.github.benmanes.caffeine.cache.Caffeine
-import com.github.benmanes.caffeine.cache.LoadingCache
+//import org.ehcache.Cache
+//import org.ehcache.config.builders.CacheConfigurationBuilder
+//import org.ehcache.config.builders.CacheManagerBuilder.newCacheManagerBuilder
+//import org.ehcache.config.builders.ExpiryPolicyBuilder
+//import org.ehcache.config.builders.ResourcePoolsBuilder
 import de.sambalmueslie.padlet.config.TeamsConfiguration
 import de.sambalmueslie.padlet.sender.card.Card
 import de.sambalmueslie.padlet.sender.card.OpenUriAction
@@ -19,7 +22,6 @@ import io.micronaut.http.client.RxHttpClient
 import io.micronaut.http.client.annotation.Client
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 
@@ -34,11 +36,20 @@ class MicrosoftTeamsSender(
         val logger: Logger = LoggerFactory.getLogger(MicrosoftTeamsSender::class.java)
     }
 
-    private var cache: LoadingCache<Long, TeamsWallConfig> = Caffeine.newBuilder()
-        .maximumSize(10000)
-        .expireAfterWrite(5, TimeUnit.MINUTES)
-        .refreshAfterWrite(1, TimeUnit.MINUTES)
-        .build { wallId -> repository.findByWallId(wallId) }
+//    private val cache: Cache<Long, TeamsWallConfig> = newCacheManagerBuilder().build(true)
+//        .createCache(
+//            TeamsWallConfig::class.simpleName,
+//            CacheConfigurationBuilder.newCacheConfigurationBuilder(
+//                Long::class.java, TeamsWallConfig::class.java,
+//                ResourcePoolsBuilder.heap(100)
+//            ).withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofMinutes(5))).build()
+//        )
+
+//    private var cache: LoadingCache<Long, TeamsWallConfig> = Caffeine.newBuilder()
+//        .maximumSize(10000)
+//        .expireAfterWrite(5, TimeUnit.MINUTES)
+//        .refreshAfterWrite(1, TimeUnit.MINUTES)
+//        .build { wallId -> repository.findByWallId(wallId) }
 
     private val queues = mutableMapOf<Long, ChangeQueue>()
 
@@ -78,7 +89,7 @@ class MicrosoftTeamsSender(
     }
 
     private fun isEnabled(wallId: Long): Boolean {
-        val config = cache[wallId] ?: return false
+        val config = get(wallId) ?: return false
         return config.active
     }
 
@@ -99,12 +110,20 @@ class MicrosoftTeamsSender(
     }
 
     private fun send(wallId: Long, cards: List<Card>) {
-        val config = cache[wallId] ?: return
+        val config = get(wallId) ?: return
         cards.forEach {
             val request = HttpRequest.POST(config.url, it)
             val result = httpClient.exchange(request, Argument.STRING).blockingFirst()
             result.status.code in 200..299
         }
+    }
+
+    private fun get(wallId: Long): TeamsWallConfig? {
+//        val hit = cache.get(wallId)
+//        if (hit != null) return hit
+        val data = repository.findByWallId(wallId) ?: return null
+//        cache.put(wallId, data)
+        return data
     }
 
 

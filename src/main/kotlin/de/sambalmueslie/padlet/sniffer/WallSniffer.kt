@@ -13,7 +13,6 @@ import io.micronaut.scheduling.annotation.Scheduled
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import javax.inject.Singleton
-import javax.persistence.PersistenceException
 import kotlin.math.max
 import kotlin.system.measureTimeMillis
 
@@ -54,8 +53,8 @@ open class WallSniffer(
                     val entry = repository.save(SniffWallEntry(0, wish.attributes.wallId, permalink, user))
                     wishes.map { SniffWallWishEntry.create(it, entry) }.forEach { wishRepository.save(it) }
                 }
-            } catch (ex: PersistenceException) {
-                logger.error("Failed to store data", ex)
+//            } catch (ex: PersistenceException) {
+//                logger.error("Failed to store data", ex)
             } catch (eh: HttpClientResponseException) {
                 // intentionally left empty
             } catch (e: Exception) {

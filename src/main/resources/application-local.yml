@@ -1,0 +1,5 @@
+datasources:
+  default:
+    url: jdbc:postgresql://localhost:5432/padletnotify
+    username: postgres
+    password: postgres

@@ -105,23 +105,23 @@ CREATE TRIGGER teams_wall_config_modified
 EXECUTE PROCEDURE update_modified_column();
 
 /* wall sniff entry */
-CREATE SEQUENCE wall_sniff_entry_seq;
-CREATE TABLE wall_sniff_entry
+CREATE SEQUENCE sniff_wall_entry_seq;
+CREATE TABLE sniff_wall_entry
 (
-    id      bigint not null primary key default nextval('wall_sniff_entry_seq'::regclass),
+    id      bigint not null primary key default nextval('sniff_wall_entry_seq'::regclass),
     wall_id BIGINT NOT NULL,
     link    VARCHAR(255),
     author  VARCHAR(255)
 );
 
-CREATE TRIGGER wall_sniff_entry_modified
+CREATE TRIGGER sniff_wall_entry_modified
     BEFORE UPDATE
-    ON wall_sniff_entry
+    ON sniff_wall_entry
     FOR EACH ROW
 EXECUTE PROCEDURE update_modified_column();
 
 /* wall entry sniff entry */
-CREATE TABLE wall_entry_sniff_entry
+CREATE TABLE sniff_wall_wish_entry
 (
     id                  VARCHAR(255)                NOT NULL PRIMARY KEY,
     type                VARCHAR(255)                NOT NULL,

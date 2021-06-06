@@ -1,7 +1,6 @@
 package de.sambalmueslie.padlet.update.db
 
 import java.time.LocalDateTime
-import java.time.ZonedDateTime
 import javax.persistence.*
 
 @Entity(name = "WallPage")
